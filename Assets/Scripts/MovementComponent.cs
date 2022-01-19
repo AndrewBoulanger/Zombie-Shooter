@@ -17,6 +17,13 @@ public class MovementComponent : MonoBehaviour
     //components
     private PlayerController playerController;
     private Rigidbody rigidbody;
+    private Animator animator;
+
+    //animator hash values
+    public readonly int MovementXHash = Animator.StringToHash("MovementX");
+    public readonly int MovementYHash = Animator.StringToHash("MovementY");
+    public readonly int isRunningHash = Animator.StringToHash("IsRunning");
+    public readonly int isJumpingHash = Animator.StringToHash("IsJumping");
    
     //references
     Vector2 inputVector = Vector2.zero;
@@ -26,6 +33,7 @@ public class MovementComponent : MonoBehaviour
     {
         rigidbody = GetComponent<Rigidbody>();
         playerController = GetComponent<PlayerController>();
+        animator = GetComponent<Animator>();
     }
 
     // Start is called before the first frame update
@@ -53,11 +61,14 @@ public class MovementComponent : MonoBehaviour
     public void OnMovement(InputValue value)
     {
         inputVector = value.Get<Vector2>();
+        animator.SetFloat(MovementXHash, inputVector.x);
+        animator.SetFloat(MovementYHash, inputVector.y);
     }
 
     public void OnRun(InputValue value)
     {
         playerController.isRunning = value.isPressed;
+        animator.SetBool(isRunningHash, playerController.isRunning);
     }
 
     public void OnJump(InputValue value)
@@ -66,12 +77,16 @@ public class MovementComponent : MonoBehaviour
         playerController.isJumping = value.isPressed;
 
         rigidbody.AddForce((transform.up + moveDirection) * jumpForce, ForceMode.Impulse);
+        animator.SetBool(isJumpingHash, playerController.isJumping);
     }
 
 
     private void OnCollisionEnter(Collision collision)
     {
         if(collision.gameObject.CompareTag("Ground") && playerController.isJumping)
+        { 
             playerController.isJumping = false;
+            animator.SetBool(isJumpingHash, playerController.isJumping);
+        }
     }
 }
