@@ -15,19 +15,19 @@
                 },
                 {
                     "name": "Jump",
-                    "type": "Button",
+                    "type": "PassThrough",
                     "id": "8b7a5b5c-c7d9-4a92-b075-0c3558b0e725",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "Analog",
                     "processors": "",
                     "interactions": "Press"
                 },
                 {
                     "name": "Run",
-                    "type": "Button",
+                    "type": "PassThrough",
                     "id": "976a4768-1932-4e9c-aba9-924c10ad6f7a",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "Analog",
                     "processors": "",
-                    "interactions": "Press(behavior=2)"
+                    "interactions": "Press"
                 }
             ],
             "bindings": [
@@ -123,6 +123,17 @@
                     "name": "",
                     "id": "9cc0f3c4-f0e7-4761-a69f-7601e16169c6",
                     "path": "<Keyboard>/leftShift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Run",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b9e1b42a-c713-4b89-b48b-3447cb739b5d",
+                    "path": "<Gamepad>/leftStickPress",
                     "interactions": "",
                     "processors": "",
                     "groups": "",

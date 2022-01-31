@@ -67,12 +67,15 @@ public class MovementComponent : MonoBehaviour
 
     public void OnRun(InputValue value)
     {
-        playerController.isRunning = value.isPressed;
+        playerController.isRunning = !playerController.isRunning;
         animator.SetBool(isRunningHash, playerController.isRunning);
+        print("Running: " + playerController.isRunning);
     }
 
     public void OnJump(InputValue value)
     {
+        print("jump button pressed");
+
         if(playerController.isJumping) return;
         playerController.isJumping = value.isPressed;
 
@@ -87,6 +90,8 @@ public class MovementComponent : MonoBehaviour
         { 
             playerController.isJumping = false;
             animator.SetBool(isJumpingHash, playerController.isJumping);
+
+            print("landed");
         }
     }
 }
