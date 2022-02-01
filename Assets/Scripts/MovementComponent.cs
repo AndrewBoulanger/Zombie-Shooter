@@ -7,9 +7,11 @@ public class MovementComponent : MonoBehaviour
 {
 
     [SerializeField]
-    float walkSpeed = 5;
+    float walkSpeed = 4;
     [SerializeField]
     float runSpeed = 10;
+    [SerializeField]
+    float aimWalkSpeed = 1;
     [SerializeField]
     float jumpForce = 5;
     [SerializeField]
@@ -29,6 +31,7 @@ public class MovementComponent : MonoBehaviour
     public readonly int isJumpingHash = Animator.StringToHash("IsJumping");
     public readonly int isAimingHash = Animator.StringToHash("isAiming");
     public readonly int cancelledAimingHash = Animator.StringToHash("cancelledAiming");
+    public readonly int interuptedRunningHash = Animator.StringToHash("WasRunningInterupted");
    
     //references
     Vector2 inputVector = Vector2.zero;
@@ -61,6 +64,7 @@ public class MovementComponent : MonoBehaviour
             moveDirection = transform.forward * inputVector.y + transform.right * inputVector.x;
 
             float currentSpeed = (playerController.isRunning) ? runSpeed : walkSpeed;
+            currentSpeed = playerController.isAiming ? aimWalkSpeed : currentSpeed;
 
             Vector3 movementDirection = moveDirection * (currentSpeed * Time.deltaTime);
 
@@ -139,14 +143,20 @@ public class MovementComponent : MonoBehaviour
             {
                 playerController.isRunning = false;
                 interuptedRunning = true;
+                animator.SetBool(interuptedRunningHash, true);
+                animator.SetBool(isRunningHash,playerController.isRunning);
             }
         }
-        else if(interuptedRunning)
-        {
-            playerController.isRunning = true;
-        }
+
         animator.SetBool(isAimingHash, playerController.isAiming);
-        animator.SetBool(isRunningHash,playerController.isRunning);
+
+        if (value.isPressed == false && interuptedRunning)
+        {
+            interuptedRunning = false;
+            playerController.isRunning = true;
+            animator.SetBool(interuptedRunningHash, false);
+             animator.SetBool(isRunningHash, true);
+        }
     }
 
     public void OnLook(InputValue value)
