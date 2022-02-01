@@ -12,22 +12,30 @@ public class MovementComponent : MonoBehaviour
     float runSpeed = 10;
     [SerializeField]
     float jumpForce = 5;
+    [SerializeField]
+    float aimSensitivity = 1;
 
 
     //components
     private PlayerController playerController;
     private Rigidbody rigidbody;
     private Animator animator;
+    public GameObject followTarget;
 
     //animator hash values
     public readonly int MovementXHash = Animator.StringToHash("MovementX");
     public readonly int MovementYHash = Animator.StringToHash("MovementY");
     public readonly int isRunningHash = Animator.StringToHash("IsRunning");
     public readonly int isJumpingHash = Animator.StringToHash("IsJumping");
+    public readonly int isAimingHash = Animator.StringToHash("isAiming");
+    public readonly int cancelledAimingHash = Animator.StringToHash("cancelledAiming");
    
     //references
     Vector2 inputVector = Vector2.zero;
     Vector3 moveDirection = Vector3.zero;
+    Vector2 LookInput = Vector2.zero;
+    bool interuptedRunning;
+
 
     private void Awake()
     {
@@ -45,17 +53,43 @@ public class MovementComponent : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(playerController.isJumping) return;
-        if(!(inputVector.magnitude > 0)) moveDirection = Vector3.zero;
+        //player movement
+        if(playerController.isJumping == false) 
+        {
+            if (!(inputVector.magnitude > 0)) moveDirection = Vector3.zero;
 
-        moveDirection = transform.forward * inputVector.y + transform.right * inputVector.x;
+            moveDirection = transform.forward * inputVector.y + transform.right * inputVector.x;
 
-        float currentSpeed = (playerController.isRunning) ? runSpeed : walkSpeed;
+            float currentSpeed = (playerController.isRunning) ? runSpeed : walkSpeed;
 
-        Vector3 movementDirection = moveDirection * (currentSpeed * Time.deltaTime);
+            Vector3 movementDirection = moveDirection * (currentSpeed * Time.deltaTime);
 
-        transform.position += movementDirection;
+            transform.position += movementDirection;
+        }
 
+        //camera movement
+        followTarget.transform.rotation *= Quaternion.AngleAxis(LookInput.x * aimSensitivity, Vector3.up);
+
+        followTarget.transform.rotation *= Quaternion.AngleAxis(LookInput.y * aimSensitivity, Vector3.left);
+
+        var angles = followTarget.transform.localEulerAngles;
+        angles.z = 0;
+
+        var angle = followTarget.transform.localEulerAngles.x;
+        if(angle > 180 && angle < 340)
+        {
+            angles.x = 340;
+        }
+        else if(angle < 180 && angle > 40)
+        {
+            angles.x = 40;
+        }
+
+        followTarget.transform.localEulerAngles = angles;
+
+        //rotate character based on camera
+        transform.rotation = Quaternion.Euler(0, followTarget.transform.rotation.eulerAngles.y, 0);
+        followTarget.transform.localEulerAngles = new Vector3(angles.x, 0,0);
     }
 
     public void OnMovement(InputValue value)
@@ -92,6 +126,42 @@ public class MovementComponent : MonoBehaviour
             animator.SetBool(isJumpingHash, playerController.isJumping);
 
             print("landed");
+        }
+    }
+
+    public void OnAim(InputValue value)
+    {
+        playerController.isAiming = value.isPressed;
+        
+        if(value.isPressed)
+        {
+            if (playerController.isRunning)
+            {
+                playerController.isRunning = false;
+                interuptedRunning = true;
+            }
+        }
+        else if(interuptedRunning)
+        {
+            playerController.isRunning = true;
+        }
+        animator.SetBool(isAimingHash, playerController.isAiming);
+        animator.SetBool(isRunningHash,playerController.isRunning);
+    }
+
+    public void OnLook(InputValue value)
+    {
+        LookInput = value.Get<Vector2>();
+
+    }
+
+    public void OnCancelAiming(InputValue value)
+    {
+        if(playerController.isAiming)
+        { 
+            playerController.isAiming = false;
+            animator.SetTrigger(cancelledAimingHash);
+            animator.SetBool(isAimingHash, false);
         }
     }
 }
