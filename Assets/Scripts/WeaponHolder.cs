@@ -20,8 +20,11 @@ public class WeaponHolder : MonoBehaviour
     [SerializeField]
     Transform gripIKSocketLocation;
 
+    bool waitingToAim;
+
     public readonly int isAimingHash = Animator.StringToHash("isAiming");
     public readonly int cancelledAimingHash = Animator.StringToHash("cancelledAiming");
+    public readonly int isReloadingHash = Animator.StringToHash("isDrawingArrow");
 
     private void Start()
     {
@@ -42,37 +45,42 @@ public class WeaponHolder : MonoBehaviour
         animator.SetIKPosition(AvatarIKGoal.LeftHand, gripIKSocketLocation.position);
     }
 
-    public void OnAim(InputValue value)
+    public void OnAim( InputValue value)
     {
-        playerController.isAiming = value.isPressed;
-
-        if (value.isPressed)
-        {
-            StartArrowDrawBack();
-        }
-
-        //released arrow
-        else if (value.isPressed == false)
-        {
-            LooseArrow();
-
-            if (playerController.wasRunningInterupted)
+            if (value.isPressed )
             {
-                movementComponent.ResumeRunning();
+                StartArrowDrawBack();
             }
+
+            //released arrow
+            else if(playerController.isAiming)
+            {
+                LooseArrow();
+
+                StopAiming();
+            }
+
+    }
+
+    void StopAiming()
+    {
+        waitingToAim = false;
+
+        playerController.isAiming = false;
+        animator.SetBool(isAimingHash, false);
+
+        if (playerController.wasRunningInterupted)
+        {
+            movementComponent.ResumeRunning();
         }
-
-        animator.SetBool(isAimingHash, playerController.isAiming);
-
     }
 
     public void OnCancelAiming(InputValue value)
     {
         if (playerController.isAiming)
         {
-            playerController.isAiming = false;
             animator.SetTrigger(cancelledAimingHash);
-            animator.SetBool(isAimingHash, false);
+            StopAiming();
         }
     }
 
@@ -81,17 +89,29 @@ public class WeaponHolder : MonoBehaviour
         if(playerController.isReloading == false)
         {
             equippedWeapon.StartDrawingArrow();
+
+            playerController.isAiming = true;
+            animator.SetBool(isAimingHash, playerController.isAiming);
+
             if (playerController.isRunning)
             {
                 movementComponent.InteruptRun();
             }
         }
+        else 
+        { 
+            waitingToAim = true;
+            Invoke("StartArrowDrawBack", 0.5f);
+        }
+
     }
 
     private void LooseArrow()
     {
         playerController.isReloading = true;
         equippedWeapon.Shoot();
+
+        animator.SetBool(isReloadingHash, true);
     }
 
 }

@@ -28,11 +28,11 @@ public class BowComponent : WeaponComponent
     {
         List<Vector3> hitLocations = new List<Vector3>();
 
-        if(drawTimer >= weaponStats.drawTime && !isReloading)
+        if(drawTimer >= weaponStats.drawTime)
         { 
             base.Shoot();
             isDrawingArrow = false;
-            isReloading = true;
+            drawTimer = 0;
             
             Ray screenRay = mainCamera.ScreenPointToRay(new Vector3(Screen.width*0.5f, Screen.height *0.5f));
 
@@ -65,11 +65,8 @@ public class BowComponent : WeaponComponent
 
     public override void StartDrawingArrow()
     {
-        if(!isReloading && weaponHolder.playerController.isAiming)
-        { 
-            drawTimer = 0;
-            isDrawingArrow = true;
-            isReloading = false;
-        }
+        print("is drawing arrow called");
+        isDrawingArrow = true;
+
     }
 }
