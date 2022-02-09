@@ -29,8 +29,6 @@ public class MovementComponent : MonoBehaviour
     public readonly int MovementYHash = Animator.StringToHash("MovementY");
     public readonly int isRunningHash = Animator.StringToHash("IsRunning");
     public readonly int isJumpingHash = Animator.StringToHash("IsJumping");
-    public readonly int isAimingHash = Animator.StringToHash("isAiming");
-    public readonly int cancelledAimingHash = Animator.StringToHash("cancelledAiming");
     public readonly int interuptedRunningHash = Animator.StringToHash("WasRunningInterupted");
    
     //references
@@ -133,45 +131,30 @@ public class MovementComponent : MonoBehaviour
         }
     }
 
-    public void OnAim(InputValue value)
-    {
-        playerController.isAiming = value.isPressed;
-        
-        if(value.isPressed)
-        {
-            if (playerController.isRunning)
-            {
-                playerController.isRunning = false;
-                interuptedRunning = true;
-                animator.SetBool(interuptedRunningHash, true);
-                animator.SetBool(isRunningHash,playerController.isRunning);
-            }
-        }
-
-        animator.SetBool(isAimingHash, playerController.isAiming);
-
-        if (value.isPressed == false && interuptedRunning)
-        {
-            interuptedRunning = false;
-            playerController.isRunning = true;
-            animator.SetBool(interuptedRunningHash, false);
-             animator.SetBool(isRunningHash, true);
-        }
-    }
-
     public void OnLook(InputValue value)
     {
         LookInput = value.Get<Vector2>();
 
     }
 
-    public void OnCancelAiming(InputValue value)
+    public void InteruptRun()
     {
-        if(playerController.isAiming)
-        { 
-            playerController.isAiming = false;
-            animator.SetTrigger(cancelledAimingHash);
-            animator.SetBool(isAimingHash, false);
-        }
+        playerController.isRunning = false;
+        playerController.wasRunningInterupted = true;
+        animator.SetBool(interuptedRunningHash, true);
+        animator.SetBool(isRunningHash, playerController.isRunning);
+
+
     }
+
+    public void ResumeRunning()
+    {
+        playerController.wasRunningInterupted = false;
+        playerController.isRunning = true;
+        animator.SetBool(interuptedRunningHash, false);
+        animator.SetBool(isRunningHash, true);
+
+
+    }
+
 }
