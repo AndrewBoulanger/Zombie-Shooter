@@ -20,7 +20,6 @@ public class BowComponent : WeaponComponent
         if(isDrawingArrow)
         {
             drawTimer += Time.deltaTime;
-            print(drawTimer);
         }
     }
 
@@ -57,15 +56,23 @@ public class BowComponent : WeaponComponent
 
                 Debug.DrawLine(transform.position, hit.point, Color.red, 2.0f);
 
+                arrowHitEffect.transform.position = hit.point;
+                DealDamage(hit);
             }
         }
 
         
     }
 
+    void DealDamage(RaycastHit hitInfo)
+    {
+        IDamageable damageable = hitInfo.collider.GetComponent<IDamageable>();
+        damageable?.TakeDamage(weaponStats.damage);
+    }
+
+
     public override void StartDrawingArrow()
     {
-        print("is drawing arrow called");
         isDrawingArrow = true;
 
     }

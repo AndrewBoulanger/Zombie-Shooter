@@ -127,6 +127,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ikGripLocation: {fileID: 750231120142194392}
+  arrowHitEffect: {fileID: 198076924919084778, guid: 0624c6f5a57851d48ba74b4f86ec13d7, type: 3}
   weaponStats:
     weaponType: 1
     weaponName: regular bow

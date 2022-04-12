@@ -31,9 +31,11 @@ public class WeaponComponent : MonoBehaviour
     protected bool isReloading;
     
     protected Camera mainCamera;
+    [SerializeField]
+    protected ParticleSystem arrowHitEffect;
 
     [SerializeField]
-    protected WeaponStats weaponStats;
+    public WeaponStats weaponStats;
 
     private void Awake()
     {
@@ -53,8 +55,6 @@ public class WeaponComponent : MonoBehaviour
 
     public virtual void Shoot()
     {
-        print("arrow fired");
-
         isReloading = true;
     }
 

@@ -45,11 +45,6 @@ public class MovementComponent : MonoBehaviour
         animator = GetComponent<Animator>();
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
     // Update is called once per frame
     void Update()
@@ -105,36 +100,39 @@ public class MovementComponent : MonoBehaviour
     {
         playerController.isRunning = !playerController.isRunning;
         animator.SetBool(isRunningHash, playerController.isRunning);
-        print("Running: " + playerController.isRunning);
+   
     }
 
     public void OnJump(InputValue value)
     {
-        print("jump button pressed");
-
         if(playerController.isJumping) return;
         playerController.isJumping = value.isPressed;
 
         rigidbody.AddForce((transform.up + moveDirection) * jumpForce, ForceMode.Impulse);
         animator.SetBool(isJumpingHash, playerController.isJumping);
+
+        InvokeRepeating("LandingCheck", 1f, 0.2f);
     }
 
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        if(collision.gameObject.CompareTag("Ground") && playerController.isJumping)
-        { 
-            playerController.isJumping = false;
-            animator.SetBool(isJumpingHash, playerController.isJumping);
-
-            print("landed");
-        }
-    }
 
     public void OnLook(InputValue value)
     {
         LookInput = value.Get<Vector2>();
 
+    }
+
+    private void LandingCheck()
+    {
+       bool hit = Physics.Raycast(transform.position, Vector3.down, 0.25f);
+        print(hit);
+        if(hit)
+        {
+            playerController.isJumping = false;
+            animator.SetBool(isJumpingHash, playerController.isJumping);
+
+            CancelInvoke("LandingCheck");
+        }
+            
     }
 
     public void InteruptRun()
