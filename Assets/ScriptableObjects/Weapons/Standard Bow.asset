@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0711c7eec024aaa4396efda85bbbaffe, type: 3}
+  m_Name: Standard Bow
+  m_EditorClassIdentifier: 
+  name: Standard Bow
+  itemCategory: 1
+  itemPrefab: {fileID: 2408295950404536175, guid: 09b114442d2bc4c41a6f44c821e124ba, type: 3}
+  stackable: 0
+  maxSize: 1
+  amountValue: 1
+  controller: {fileID: 0}
+  weaponStats:
+    weaponType: 1
+    weaponName: Standard Bow
+    damage: 50
+    arrowsPerShot: 1
+    drawTime: 1.5
+    distance: 50
+    isPiercing: 0
+    weaponHitLayer:
+      serializedVersion: 2
+      m_Bits: 1

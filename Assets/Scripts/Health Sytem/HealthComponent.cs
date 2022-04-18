@@ -25,8 +25,13 @@ public class HealthComponent : MonoBehaviour, IDamageable
         currentHealth -= damage;
         if(currentHealth <= 0)
             Destroy();
+    }
 
-        print(gameObject.name + " health: " + currentHealth);
+    public virtual void Heal(float amount)
+    {
+        currentHealth += amount;
+        if (currentHealth > MaxHealth)
+            currentHealth = MaxHealth;
     }
 
 }
