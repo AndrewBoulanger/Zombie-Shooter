@@ -46,7 +46,7 @@ public class StateManager : MonoBehaviour
 
         currentState = states[newState];
         currentState.Start();
-        Debug.Log("Changing state: " + newState.ToString());
+
         if(currentState.UpdateInterval > 0)
         {
             InvokeRepeating(nameof(IntervalUpdate), 0, currentState.UpdateInterval);

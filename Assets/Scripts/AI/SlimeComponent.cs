@@ -25,7 +25,8 @@ public class SlimeComponent : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-    Initialize(followTarget);
+        if(followTarget)
+            Initialize(followTarget);
         
     }
 

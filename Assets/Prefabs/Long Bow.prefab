@@ -133,7 +133,7 @@ MonoBehaviour:
     weaponName: regular bow
     damage: 50
     arrowsPerShot: 1
-    drawTime: 2
+    drawTime: 1.5
     distance: 50
     isPiercing: 0
     weaponHitLayer:

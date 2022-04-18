@@ -13,7 +13,7 @@ public class WeaponHolder : MonoBehaviour
     MovementComponent movementComponent;
     Animator animator;
 
-    int ammoCount = 10;
+    int ammoCount = 30;
 
     Sprite crosshairImage;
 
@@ -77,6 +77,8 @@ public class WeaponHolder : MonoBehaviour
         {
             movementComponent.ResumeRunning();
         }
+       
+        movementComponent.SetMomentum(0.1f);
     }
 
     public void OnCancelAiming(InputValue value)

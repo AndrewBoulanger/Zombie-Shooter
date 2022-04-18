@@ -19,12 +19,14 @@ public class SlimeFollowState : SlimeState
     {
         base.Start();
         ownerSlime.navMesh.SetDestination(followTarget.transform.position);
+        ownerSlime.navMesh.isStopped = false;
     }
 
     public override void IntervalUpdate()
     {
         base.IntervalUpdate();
         ownerSlime.navMesh.SetDestination(followTarget.transform.position);
+        Debug.Log(ownerSlime.navMesh.isStopped);
     }
 
     public override void Update()
@@ -34,7 +36,7 @@ public class SlimeFollowState : SlimeState
         ownerSlime.animator.SetBool(movementHash, isMoving);
 
         float distanceBetween = Vector3.Distance(ownerSlime.transform.position, followTarget.transform.position);
-        if(distanceBetween < stoppingDistance)
+        if(distanceBetween <= stoppingDistance)
         {
             stateMachine.ChangeState(ESlimeStates.Attacking);
         }

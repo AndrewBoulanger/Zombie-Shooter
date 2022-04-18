@@ -17,6 +17,10 @@ public class MovementComponent : MonoBehaviour
     [SerializeField]
     float aimSensitivity = 1;
 
+    float Momentum;
+
+    [SerializeField]
+    float accelerationRate, decelerationRate;
 
     //components
     private PlayerController playerController;
@@ -35,7 +39,7 @@ public class MovementComponent : MonoBehaviour
     Vector2 inputVector = Vector2.zero;
     Vector3 moveDirection = Vector3.zero;
     Vector2 LookInput = Vector2.zero;
-    bool interuptedRunning;
+    Vector2 lastMoveInput = Vector2.zero;
 
 
     private void Awake()
@@ -52,14 +56,24 @@ public class MovementComponent : MonoBehaviour
         //player movement
         if(playerController.isJumping == false) 
         {
-            if (!(inputVector.magnitude > 0)) moveDirection = Vector3.zero;
-
-            moveDirection = transform.forward * inputVector.y + transform.right * inputVector.x;
+           
+            if (inputVector.magnitude > 0) 
+            { 
+                moveDirection = transform.forward * inputVector.y + transform.right * inputVector.x;
+                Momentum += Time.deltaTime * accelerationRate;
+                lastMoveInput = inputVector;
+            }
+            else
+                Momentum -= Time.deltaTime * decelerationRate;
+            Momentum = Mathf.Clamp(Momentum, 0, 1);
 
             float currentSpeed = (playerController.isRunning) ? runSpeed : walkSpeed;
             currentSpeed = playerController.isAiming ? aimWalkSpeed : currentSpeed;
 
-            Vector3 movementDirection = moveDirection * (currentSpeed * Time.deltaTime);
+            Vector3 movementDirection = moveDirection * (currentSpeed * Time.deltaTime) * Momentum;
+
+            animator.SetFloat(MovementXHash, lastMoveInput.x * Momentum);
+            animator.SetFloat(MovementYHash, lastMoveInput.y * Momentum);
 
             transform.position += movementDirection;
         }
@@ -92,8 +106,7 @@ public class MovementComponent : MonoBehaviour
     public void OnMovement(InputValue value)
     {
         inputVector = value.Get<Vector2>();
-        animator.SetFloat(MovementXHash, inputVector.x);
-        animator.SetFloat(MovementYHash, inputVector.y);
+        
     }
 
     public void OnRun(InputValue value)
@@ -153,6 +166,11 @@ public class MovementComponent : MonoBehaviour
         animator.SetBool(isRunningHash, true);
 
 
+    }
+
+    public void SetMomentum(float f)
+    {
+        Momentum = f;
     }
 
 }
