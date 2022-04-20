@@ -37,17 +37,16 @@ public class WeaponComponent : MonoBehaviour
     [SerializeField]
     public WeaponStats weaponStats;
 
+    public MeshRenderer mesh;
+
     private void Awake()
     {
         mainCamera = Camera.main;
+        if(mesh == null)
+            mesh = GetComponentInChildren<MeshRenderer>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
+    
     public void Initialize(WeaponHolder _weaponHolder)
     {
         weaponHolder = _weaponHolder;

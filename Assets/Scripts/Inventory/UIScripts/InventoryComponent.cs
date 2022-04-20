@@ -6,12 +6,24 @@ using UnityEngine;
 public class InventoryComponent : MonoBehaviour
 {
     [SerializeField] private List<ItemScript> Items = new List<ItemScript>();
+     [SerializeField] private List<ItemScript> StartingItems = new List<ItemScript>();
 
     private PlayerController Controller;
+    private WeaponHolder weaponHolder;
     
     private void Awake()
     {
         Controller = GetComponent<PlayerController>();
+        weaponHolder = GetComponent<WeaponHolder>();
+    }
+
+    private void Start()
+    {
+        foreach (ItemScript item in StartingItems)
+        {
+            AddItem(item);
+        }
+
     }
 
     public List<ItemScript> GetItemList() => Items;
@@ -60,5 +72,15 @@ public class InventoryComponent : MonoBehaviour
 
         return itemCategory == ItemCategory.None ? Items : 
             Items.FindAll(item => item.itemCategory == itemCategory);
+    }
+
+    public void UnequipByCategory(ItemCategory category, ItemScript exception)
+    {
+        List<ItemScript> all = GetItemsOfCategory(category);
+        foreach(ItemScript i in all)
+        {
+            if(i != exception)
+                (i as WeaponItemScript).Equipped = false;
+        }
     }
 }

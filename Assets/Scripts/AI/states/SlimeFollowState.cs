@@ -26,7 +26,7 @@ public class SlimeFollowState : SlimeState
     {
         base.IntervalUpdate();
         ownerSlime.navMesh.SetDestination(followTarget.transform.position);
-        Debug.Log(ownerSlime.navMesh.isStopped);
+        
     }
 
     public override void Update()

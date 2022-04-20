@@ -24,8 +24,8 @@ MonoBehaviour:
     weaponName: Standard Bow
     damage: 50
     arrowsPerShot: 1
-    drawTime: 1.5
-    distance: 50
+    drawTime: 1
+    distance: 60
     isPiercing: 0
     weaponHitLayer:
       serializedVersion: 2

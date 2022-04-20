@@ -139,6 +139,7 @@ MonoBehaviour:
     weaponHitLayer:
       serializedVersion: 2
       m_Bits: 4294967295
+  mesh: {fileID: 2408295950406474157}
 --- !u!1 &3715442338551770460
 GameObject:
   m_ObjectHideFlags: 0

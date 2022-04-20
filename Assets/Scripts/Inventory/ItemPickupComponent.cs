@@ -23,10 +23,11 @@ public class ItemPickupComponent : MonoBehaviour
     private void InstantiateItem()
     {
         itemInstance = Instantiate(pickupItem);
-        if(amount > 0)
-        {
-            itemInstance.SetAmount(amount);
-        }
+        
+        amount = amount > 0 ? amount : pickupItem.amountValue;
+        itemInstance.SetAmount(amount);
+        
+      
         ApplyMesh();
     }
 
@@ -41,7 +42,13 @@ public class ItemPickupComponent : MonoBehaviour
     {
         if(!other.CompareTag("Player")) return;
 
+        InventoryComponent playerInv = other.GetComponent<InventoryComponent>();
+        playerInv.AddItem(pickupItem, itemInstance.amountValue);
 
+        if(itemInstance.itemCategory == ItemCategory.ammo)
+        {
+            other.GetComponent<WeaponHolder>().AddAmmo(amount);
+        }
 
         Destroy(gameObject);
     }

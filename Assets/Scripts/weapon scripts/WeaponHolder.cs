@@ -135,4 +135,12 @@ public class WeaponHolder : MonoBehaviour
         }
     }
 
+
+    public void EquipWeapon(WeaponItemScript newWeapon)
+    {
+        equippedWeapon.weaponStats = newWeapon.weaponStats;
+        equippedWeapon.mesh.materials = newWeapon.itemPrefab.GetComponent<WeaponComponent>().mesh.sharedMaterials;
+        GetComponent<InventoryComponent>().UnequipByCategory(ItemCategory.Weapon, newWeapon);
+    }
+
 }

@@ -15,7 +15,7 @@ public class WeaponItemScript : EquippableScript
         }
         else
         {
-
+            playerController.GetComponent<WeaponHolder>().EquipWeapon(this);
         }
         base.UseItem(playerController);
         

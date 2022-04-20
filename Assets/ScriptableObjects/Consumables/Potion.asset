@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Potion
   itemCategory: 2
-  itemPrefab: {fileID: 0}
-  stackable: 0
+  itemPrefab: {fileID: 1041385053147811334, guid: 1156df677ac4519498c982e988d9bdef, type: 3}
+  stackable: 1
   maxSize: 1
   amountValue: 1
   controller: {fileID: 0}
-  effect: 0
+  effect: 100
