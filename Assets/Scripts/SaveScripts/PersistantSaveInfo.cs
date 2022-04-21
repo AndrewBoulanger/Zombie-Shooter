@@ -3,35 +3,92 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public static class PersistantSaveInfo 
+public class PersistantSaveInfo : MonoBehaviour
 {
-    static bool LoadOnLevel = false;
+    public delegate void SaveGameDelegate();
+    public static event SaveGameDelegate StartSavingGame;
 
+    static bool LoadOnLevel = false;
+    public static bool HasSaveData = false;
     public static bool ShouldLoadLevel 
     {
         get => LoadOnLevel; 
         set 
         { 
             LoadOnLevel = value;
-            if(LoadOnLevel)
-                SceneManager.activeSceneChanged += LoadSavedObjects;
+            LoadData();
+            if(LoadOnLevel && HasSaveData)
+                SceneManager.sceneLoaded += LoadSavedObjects;
             else
-                SceneManager.activeSceneChanged -= LoadSavedObjects;
+                SceneManager.sceneLoaded -= LoadSavedObjects;
         }
     }
 
 
-    static void LoadSavedObjects(Scene OldScene, Scene newScene )
+    private void Start()
     {
-        if(newScene.name == "GameScene")
+        DontDestroyOnLoad(this);
+    }
+
+    static void LoadSavedObjects(Scene scene, LoadSceneMode mode )
+    {
+        if(scene.name == "GameScene")
         {
-            foreach(GameObject go in newScene.GetRootGameObjects())
-            {
-                if( go.TryGetComponent<ISaveable>(out ISaveable s))
-                    s.LoadData();
-                 
-            }
             ShouldLoadLevel = false;
         }
     }
+
+    public static void saveObject(object o, string name)
+    {
+        string text = JsonUtility.ToJson(o);
+        System.IO.File.WriteAllText(Application.persistentDataPath + "/" + name + ".json",  text);
+        print("Saved " + name);
+    }
+
+    public static void loadObject<T>(string name, ref T result)
+    {
+       string filePath = Application.persistentDataPath + "/" + name + ".json"; 
+        if(System.IO.File.Exists(filePath))
+        {
+            string jsonString = System.IO.File.ReadAllText(Application.persistentDataPath + "/" + name + ".json");
+            result = JsonUtility.FromJson<T>(jsonString);
+        }
+        
+       
+    }
+
+    public static void Invoke_StartSavingData()
+    {
+        StartSavingGame?.Invoke();
+        SaveData();
+    }
+
+    protected static  void SaveData()
+    {
+        SaveDataObject save = new SaveDataObject();
+        save.doesSaveDataExist = true;
+        string saveString = JsonUtility.ToJson(save);
+        System.IO.File.WriteAllText(Application.persistentDataPath + "/saveData.json", saveString);
+    }
+
+    protected static void LoadData()
+    {
+        string filePath = Application.persistentDataPath + "/saveData.json";
+        if(!System.IO.File.Exists(filePath))  return;
+        string jsonString = System.IO.File.ReadAllText(filePath);
+        SaveDataObject save = null;
+        loadObject<SaveDataObject>(jsonString, ref save);
+        
+        if(save!= null)
+            HasSaveData = save.doesSaveDataExist;
+        else 
+            HasSaveData = false;
+    }
+
+}
+
+[System.Serializable]
+public class SaveDataObject
+{
+    public bool doesSaveDataExist;
 }

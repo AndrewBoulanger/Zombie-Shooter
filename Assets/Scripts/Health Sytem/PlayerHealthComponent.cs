@@ -5,12 +5,10 @@ using UnityEngine;
 public class PlayerHealthComponent : HealthComponent
 {
 
-
-
-
     protected override void Start()
     {
         base.Start();
+        
         PlayerEvents.Invoke_OnHealthInitialized(this);
     }
 
@@ -20,5 +18,15 @@ public class PlayerHealthComponent : HealthComponent
 
         PlayerEvents.Invoke_OnPlayerDeath();
 
+    }
+
+    public void SaveData()
+    {
+        
+    }
+
+    public void LoadData()
+    {
+      
     }
 }

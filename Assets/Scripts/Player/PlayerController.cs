@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : SaveableMO
 {
 
     public bool isReloading, isJumping, isRunning, isAiming, wasRunningInterupted, isDead;
@@ -12,13 +12,15 @@ public class PlayerController : MonoBehaviour
     public InventoryComponent inventory;
     public GameUIController uIController;
 
-    private void Awake()
+    public override void Awake()
     {
         if(inventory == null)
             inventory = GetComponent<InventoryComponent>();
        
         if(uIController == null)
             uIController = FindObjectOfType<GameUIController>();
+
+        base.Awake();
     }
 
     public void OnInventory(InputValue input)
@@ -70,15 +72,44 @@ public class PlayerController : MonoBehaviour
         GetComponent<Animator>().SetBool("IsDead", true);
     }
 
-    private void OnEnable()
+    public override void OnEnable()
     {
+        base.OnEnable();
         PlayerEvents.OnPlayerDeath += OnDeath;
     }
-    private void OnDisable()
+    public override void OnDisable()
     {
-        
-            PlayerEvents.OnPlayerDeath -= OnDeath;
+        base.OnDisable();
+        PlayerEvents.OnPlayerDeath -= OnDeath;
     }
 
+    protected override void SaveData()
+    {
+        PersistantSaveInfo.saveObject(new PlayerControllerSave(this), "playerController");
+    }
 
+    protected override void LoadData()
+    {
+        PlayerControllerSave save = null;
+        PersistantSaveInfo.loadObject<PlayerControllerSave>("playerController", ref save);
+        if(save != null)
+        {
+            GetComponent<HealthComponent>().CurrentHealth = save.health;
+            isJumping = save.controller.isJumping;
+            isRunning = save.controller.isRunning;
+        }
+    }
+}
+
+[System.Serializable]
+public class PlayerControllerSave
+{
+    public PlayerController controller;
+
+    public float health;
+    public PlayerControllerSave(PlayerController _controller)
+    {
+        controller = _controller;
+        health = controller.GetComponent<HealthComponent>().CurrentHealth;
+    }
 }

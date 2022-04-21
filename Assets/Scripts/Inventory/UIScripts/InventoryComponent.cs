@@ -3,34 +3,38 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
-public class InventoryComponent : MonoBehaviour
+public class InventoryComponent : SaveableMO
 {
     [SerializeField] private List<ItemScript> Items = new List<ItemScript>();
      [SerializeField] private List<ItemScript> StartingItems = new List<ItemScript>();
+    [SerializeField] public List<ItemScript> prefabs; 
 
-    ItemScript startingBow;
+    string startingBow = "Standard Bow";
 
     private PlayerController Controller;
     private WeaponHolder weaponHolder;
     
-    private void Awake()
+    public override void Awake()
     {
         Controller = GetComponent<PlayerController>();
         weaponHolder = GetComponent<WeaponHolder>();
+        base.Awake();
     }
 
     private void Start()
     {
-        foreach (ItemScript item in StartingItems)
+        if(Items.Count == 0)
         {
-            AddItem(item);
+            foreach (ItemScript item in StartingItems)
+            {
+                AddItem(item);
+            }
         }
+       
+        ItemScript bow = FindItem(startingBow);
 
-        if(startingBow == null)
-            startingBow = FindItem("Standard Bow");
-
-        if(startingBow != null)
-            startingBow.UseItem(Controller);
+        if(bow != null)
+            bow.UseItem(Controller);
     }
 
     public List<ItemScript> GetItemList() => Items;
@@ -89,5 +93,41 @@ public class InventoryComponent : MonoBehaviour
             if(i != exception)
                 (i as WeaponItemScript).Equipped = false;
         }
+    }
+
+    protected override void SaveData()
+    {
+        List<string> itemIds = new List<string>(Items.Count);
+        foreach (ItemScript i in Items)
+        {
+            itemIds.Add(i.itemPrefab.name);
+        }
+        PersistantSaveInfo.saveObject(new InventorySave(itemIds, weaponHolder.equippedWeapon.weaponStats.weaponName), "inventory");
+    }
+
+    protected override void LoadData()
+    {
+        InventorySave save =  null;
+        PersistantSaveInfo.loadObject<InventorySave>("inventory", ref save);
+        if(save != null)
+        {
+            foreach (string i in save.items)
+            {
+                StartingItems.Add(prefabs.Find(_ => _.itemPrefab.name == i));
+            }
+            startingBow = save.startingBow;
+        }
+    }
+}
+
+[System.Serializable]
+public class InventorySave
+{
+    public List<string> items = new List<string>();
+    public string startingBow;
+    public InventorySave(List<string> _items, string bow)
+    {
+        items = _items;
+        startingBow = bow;
     }
 }

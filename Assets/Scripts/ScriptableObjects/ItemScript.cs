@@ -4,7 +4,7 @@ using UnityEngine;
 
 public enum ItemCategory{ None, Weapon, Consumable, Equiptment, ammo}
 
-
+[System.Serializable]
 public abstract class ItemScript : ScriptableObject
 {
     public string name = "item";
@@ -30,6 +30,14 @@ public abstract class ItemScript : ScriptableObject
     public virtual void Initialize(PlayerController playerController)
     {
         controller = playerController;
+    }
+
+    public virtual bool canWrite
+    {
+        get
+        {
+            return false;
+        }
     }
 
     public abstract void UseItem(PlayerController playerController);

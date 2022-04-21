@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class MovementComponent : MonoBehaviour
+public class MovementComponent : SaveableMO
 {
 
     [SerializeField]
@@ -44,20 +44,23 @@ public class MovementComponent : MonoBehaviour
     Vector2 lastMoveInput = Vector2.zero;
 
 
-    private void Awake()
+    public override void Awake()
     {
         rigidbody = GetComponent<Rigidbody>();
         playerController = GetComponent<PlayerController>();
         animator = GetComponent<Animator>();
 
         notPlayer = ~LayerMask.NameToLayer("Player");
+        base.Awake();
+        
     }
 
 
     // Update is called once per frame
     void Update()
     {
-        if(playerController.isDead) return;
+
+        if(playerController.isDead || playerController.gameIsPaused) return;
 
         //player movement
         if(playerController.isJumping == false) 
@@ -124,7 +127,7 @@ public class MovementComponent : MonoBehaviour
 
     public void OnJump(InputValue value)
     {
-        if(playerController.isJumping) return;
+        if(playerController.isJumping || playerController.gameIsPaused) return;
         playerController.isJumping = value.isPressed;
 
         rigidbody.AddForce((transform.up + moveDirection) * jumpForce, ForceMode.Impulse);
@@ -179,4 +182,34 @@ public class MovementComponent : MonoBehaviour
         Momentum = f;
     }
 
+    protected override void SaveData()
+    {
+        PersistantSaveInfo.saveObject(new playerMovementSave(transform, followTarget.transform), "PlayerMov");
+    }
+
+    protected override void LoadData()
+    {
+
+        playerMovementSave save = null;
+        PersistantSaveInfo.loadObject<playerMovementSave>("PlayerMov", ref save);
+        if(save != null)
+        { 
+            gameObject.transform.SetPositionAndRotation(save.playerloc, save.playerRot);
+            followTarget.transform.SetPositionAndRotation(save.camLoc, save.camRot);
+        }
+    }
+}
+
+[System.Serializable]
+public class playerMovementSave
+{
+    public Vector3 playerloc, camLoc;
+    public Quaternion playerRot, camRot;
+    public playerMovementSave(Transform player, Transform follow)
+    {
+        playerloc = player.position;
+        playerRot = player.rotation;
+        camLoc = follow.position;
+        camRot = follow.rotation;
+    }
 }

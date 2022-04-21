@@ -54,7 +54,7 @@ public class BowComponent : WeaponComponent
  
                 hitLocations.Add(hit.point);
 
-                Debug.DrawLine(transform.position, hit.point, Color.red, 2.0f);
+                Debug.DrawLine(transform.position, hit.point, Color.black, 5.0f);
 
                 arrowHitEffect.transform.position = hit.point;
                 DealDamage(hit);

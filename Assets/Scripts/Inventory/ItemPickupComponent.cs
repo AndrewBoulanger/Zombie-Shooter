@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ItemPickupComponent : MonoBehaviour
+public class ItemPickupComponent : SaveableMO
 {
     [SerializeField]
     ItemScript pickupItem;
@@ -15,22 +15,21 @@ public class ItemPickupComponent : MonoBehaviour
 
     ItemScript itemInstance;
 
-    static bool rotated = false;
-    static Vector3 yRot = Vector3.zero;
+    static int itemId;
 
-    // Start is called before the first frame update
-    void Start()
+    public override void Awake()
     {
-        InstantiateItem();
+        pathId = "pickupNum" + itemId++;
+        base.Awake();
+        if(gameObject.activeSelf)
+            InstantiateItem();
     }
+
     private void InstantiateItem()
     {
         itemInstance = Instantiate(pickupItem);
-        
         amount = amount > 0 ? amount : pickupItem.amountValue;
         itemInstance.SetAmount(amount);
-        
-      
         ApplyMesh();
     }
 
@@ -39,18 +38,6 @@ public class ItemPickupComponent : MonoBehaviour
         if(propMeshFilter) propMeshFilter.mesh = pickupItem.itemPrefab.GetComponentInChildren<MeshFilter>().sharedMesh;
         if(PropMeshRenderer) PropMeshRenderer.materials = pickupItem.itemPrefab.GetComponentInChildren<MeshRenderer>().sharedMaterials;
     }
-
-    private void LateUpdate()
-    {
-        rotated = false;
-    }
-
-    private void Update()
-    {
-        rotate();
-        transform.Rotate(yRot);
-    }
-
 
     private void OnTriggerEnter(Collider other)
     {
@@ -64,16 +51,41 @@ public class ItemPickupComponent : MonoBehaviour
             other.GetComponent<WeaponHolder>().AddAmmo(amount);
         }
 
-        Destroy(gameObject);
+        gameObject.SetActive(false);
     }
 
-    static void rotate()
+    public override void OnDisable()
+    { }
+
+    protected override void SaveData()
     {
-        if(!rotated)
-        { 
-            rotated = true;
-            yRot = Vector3.up * Time.deltaTime * 50f; 
+       PersistantSaveInfo.saveObject(new PickupSave(!gameObject.activeSelf), pathId);
+    }
+
+    protected override void LoadData()
+    {
+       PickupSave save = null;
+       PersistantSaveInfo.loadObject<PickupSave>(pathId, ref save);
+       if( save != null && save.wasCollected)
+        {
+            gameObject.SetActive(false);
         }
     }
 
+    void OnDestroy()
+    {
+        PersistantSaveInfo.StartSavingGame -= SaveData;
+        itemId = 0;
+    }
+}
+
+[System.Serializable]
+public class PickupSave
+{
+
+    public PickupSave(bool collected)
+    {
+        wasCollected = collected;
+    }
+    public bool wasCollected;
 }

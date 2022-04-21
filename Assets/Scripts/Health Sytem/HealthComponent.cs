@@ -6,19 +6,21 @@ public class HealthComponent : MonoBehaviour, IDamageable
 {
     [SerializeField]
     private float currentHealth, maxHealth;
-    public float CurrentHealth => currentHealth;
+    public float CurrentHealth {get => currentHealth; set => currentHealth = value; }
     public float MaxHealth => maxHealth;
 
     // Start is called before the first frame update
     protected virtual void Start()
     {
-        currentHealth = maxHealth;
+        if(currentHealth <= 0)
+            currentHealth = maxHealth;
     }
 
     public virtual void Destroy()
     {
         Destroy(gameObject);
     }
+
 
     public virtual void TakeDamage(float damage)
     {
