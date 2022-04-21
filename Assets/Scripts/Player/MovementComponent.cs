@@ -17,6 +17,8 @@ public class MovementComponent : MonoBehaviour
     [SerializeField]
     float aimSensitivity = 1;
 
+    LayerMask notPlayer;
+
     float Momentum;
 
     [SerializeField]
@@ -47,12 +49,16 @@ public class MovementComponent : MonoBehaviour
         rigidbody = GetComponent<Rigidbody>();
         playerController = GetComponent<PlayerController>();
         animator = GetComponent<Animator>();
+
+        notPlayer = ~LayerMask.NameToLayer("Player");
     }
 
 
     // Update is called once per frame
     void Update()
     {
+        if(playerController.isDead) return;
+
         //player movement
         if(playerController.isJumping == false) 
         {
@@ -136,9 +142,9 @@ public class MovementComponent : MonoBehaviour
 
     private void LandingCheck()
     {
-       bool hit = Physics.Raycast(transform.position, Vector3.down, 0.25f);
-        print(hit);
-        if(hit)
+       
+       
+        if(Physics.CheckSphere(transform.position, 0.25f, notPlayer))
         {
             playerController.isJumping = false;
             animator.SetBool(isJumpingHash, playerController.isJumping);

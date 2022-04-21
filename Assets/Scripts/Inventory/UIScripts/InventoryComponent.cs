@@ -8,6 +8,8 @@ public class InventoryComponent : MonoBehaviour
     [SerializeField] private List<ItemScript> Items = new List<ItemScript>();
      [SerializeField] private List<ItemScript> StartingItems = new List<ItemScript>();
 
+    ItemScript startingBow;
+
     private PlayerController Controller;
     private WeaponHolder weaponHolder;
     
@@ -24,6 +26,11 @@ public class InventoryComponent : MonoBehaviour
             AddItem(item);
         }
 
+        if(startingBow == null)
+            startingBow = FindItem("Standard Bow");
+
+        if(startingBow != null)
+            startingBow.UseItem(Controller);
     }
 
     public List<ItemScript> GetItemList() => Items;

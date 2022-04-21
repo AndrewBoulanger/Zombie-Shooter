@@ -17,5 +17,8 @@ public class PlayerHealthComponent : HealthComponent
     public override void Destroy()
     {
         //end level - game over
+
+        PlayerEvents.Invoke_OnPlayerDeath();
+
     }
 }

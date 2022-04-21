@@ -15,6 +15,9 @@ public class ItemPickupComponent : MonoBehaviour
 
     ItemScript itemInstance;
 
+    static bool rotated = false;
+    static Vector3 yRot = Vector3.zero;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -37,6 +40,17 @@ public class ItemPickupComponent : MonoBehaviour
         if(PropMeshRenderer) PropMeshRenderer.materials = pickupItem.itemPrefab.GetComponentInChildren<MeshRenderer>().sharedMaterials;
     }
 
+    private void LateUpdate()
+    {
+        rotated = false;
+    }
+
+    private void Update()
+    {
+        rotate();
+        transform.Rotate(yRot);
+    }
+
 
     private void OnTriggerEnter(Collider other)
     {
@@ -52,4 +66,14 @@ public class ItemPickupComponent : MonoBehaviour
 
         Destroy(gameObject);
     }
+
+    static void rotate()
+    {
+        if(!rotated)
+        { 
+            rotated = true;
+            yRot = Vector3.up * Time.deltaTime * 50f; 
+        }
+    }
+
 }

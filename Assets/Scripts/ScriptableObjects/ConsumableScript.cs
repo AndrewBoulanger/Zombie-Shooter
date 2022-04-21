@@ -7,19 +7,24 @@ public class ConsumableScript : ItemScript
 {
     public int  effect = 0;
     
+    public EffectsScript[] Effects;
+
     public override void UseItem(PlayerController playerController)
     {
-        
-        ChangeAmount(-1);
+        bool DidAnEffectWork = false;
 
-        if(amountValue <= 0)
-            DeleteItem(playerController);
-
-        HealthComponent health = playerController.GetComponent<HealthComponent>();
-
-        if(health?.CurrentHealth < health?.MaxHealth)
+        foreach(EffectsScript e in Effects)
         {
-               health.Heal(effect);
+           bool worked = e.ApplyEffect(playerController, effect);
+            if(worked) DidAnEffectWork = true;
+        }
+
+        //if none of the affects worked (ex. drank health potion at max health) dont delete item
+        if(DidAnEffectWork)
+        {
+            ChangeAmount(-1);
+            if (amountValue <= 0)
+                DeleteItem(playerController);
         }
     }
 }

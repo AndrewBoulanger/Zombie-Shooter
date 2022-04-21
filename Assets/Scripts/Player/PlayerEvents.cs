@@ -20,4 +20,13 @@ public class PlayerEvents
     {
         OnHealthInitialized?.Invoke(healthComponent);
     }
+
+    public delegate void OnPlayerDeathEvent();
+    public static event OnPlayerDeathEvent OnPlayerDeath;
+
+    public static void Invoke_OnPlayerDeath()
+    {
+        OnPlayerDeath?.Invoke();
+    }
+
 }

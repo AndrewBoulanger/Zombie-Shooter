@@ -19,4 +19,6 @@ MonoBehaviour:
   maxSize: 1
   amountValue: 1
   controller: {fileID: 0}
-  effect: 100
+  effect: 150
+  Effects:
+  - {fileID: 11400000, guid: ae821758c61651d41a7740cd37526288, type: 2}
