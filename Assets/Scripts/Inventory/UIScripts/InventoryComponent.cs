@@ -13,11 +13,14 @@ public class InventoryComponent : SaveableMO
 
     private PlayerController Controller;
     private WeaponHolder weaponHolder;
+
+    ItemScript arrows;
     
     public override void Awake()
     {
         Controller = GetComponent<PlayerController>();
         weaponHolder = GetComponent<WeaponHolder>();
+
         base.Awake();
     }
 
@@ -35,6 +38,9 @@ public class InventoryComponent : SaveableMO
 
         if(bow != null)
             bow.UseItem(Controller);
+        arrows = FindItem("Arrows");
+        weaponHolder.AddAmmo(arrows.amountValue);
+        
     }
 
     public List<ItemScript> GetItemList() => Items;
@@ -95,14 +101,33 @@ public class InventoryComponent : SaveableMO
         }
     }
 
+    void OnArrowUsed(int numArrows)
+    {
+        arrows.amountValue = numArrows;
+    }
+
+    public override void OnEnable()
+    {
+        weaponHolder.OnArrowFired += OnArrowUsed;
+        base.OnEnable();
+    }
+    public override void OnDisable()
+    {
+        weaponHolder.OnArrowFired -= OnArrowUsed;
+        base.OnDisable();
+    }
+
+
     protected override void SaveData()
     {
         List<string> itemIds = new List<string>(Items.Count);
+        List<int> amounts = new List<int>(Items.Count);
         foreach (ItemScript i in Items)
         {
             itemIds.Add(i.itemPrefab.name);
+            amounts.Add(i.amountValue);
         }
-        PersistantSaveInfo.saveObject(new InventorySave(itemIds, weaponHolder.equippedWeapon.weaponStats.weaponName), "inventory");
+        PersistantSaveInfo.saveObject(new InventorySave(itemIds, amounts, weaponHolder.equippedWeapon.weaponStats.weaponName), "inventory");
     }
 
     protected override void LoadData()
@@ -111,9 +136,10 @@ public class InventoryComponent : SaveableMO
         PersistantSaveInfo.loadObject<InventorySave>("inventory", ref save);
         if(save != null)
         {
-            foreach (string i in save.items)
+            for(int i= 0; i < save.items.Count; i++)
             {
-                StartingItems.Add(prefabs.Find(_ => _.itemPrefab.name == i));
+                StartingItems.Add(prefabs.Find(_ => _.itemPrefab.name == save.items[i]));
+                StartingItems[i].amountValue = save.amounts[i];
             }
             startingBow = save.startingBow;
         }
@@ -124,10 +150,12 @@ public class InventoryComponent : SaveableMO
 public class InventorySave
 {
     public List<string> items = new List<string>();
+    public List<int> amounts = new List<int>();
     public string startingBow;
-    public InventorySave(List<string> _items, string bow)
+    public InventorySave(List<string> _items, List<int> _amounts, string bow)
     {
         items = _items;
+        amounts = _amounts;
         startingBow = bow;
     }
 }

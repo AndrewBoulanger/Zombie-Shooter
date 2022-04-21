@@ -15,6 +15,14 @@ public class SlimeComponent : MonoBehaviour
     public StateManager stateMachine;
     public GameObject followTarget;
 
+    public delegate void OnSlimeDeathDelegate(SlimeComponent slime);
+    public static event OnSlimeDeathDelegate OnSlimeDeath;
+
+    public void InvokeOnSlimeDeath()
+    {
+        OnSlimeDeath?.Invoke(this);
+    }
+
     private void Awake()
     {
         animator = GetComponent<Animator>();
@@ -30,11 +38,6 @@ public class SlimeComponent : MonoBehaviour
         
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     public void Initialize(GameObject _followTarget)
     {
@@ -48,4 +51,5 @@ public class SlimeComponent : MonoBehaviour
         stateMachine.Initialize(ESlimeStates.Following);
     }
 
+    
 }

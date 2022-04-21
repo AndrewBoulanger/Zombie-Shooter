@@ -29,4 +29,12 @@ public class PlayerEvents
         OnPlayerDeath?.Invoke();
     }
 
+    public delegate void OnPlayerWinEvent();
+    public static event OnPlayerWinEvent OnPlayerWin;
+
+    public static void Invoke_OnPlayerWin()
+    {
+        OnPlayerWin?.Invoke();
+    }
+
 }

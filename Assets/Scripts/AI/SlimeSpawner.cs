@@ -12,24 +12,31 @@ public class SlimeSpawner : MonoBehaviour
 
     GameObject followObject;
 
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         followObject = GameObject.FindGameObjectWithTag("Player");
-        for(int i = 0; i < numToSpawn; i++)
-        {
-            Spawn();
-        }
     }
 
-    void Spawn()
+    public SlimeComponent Spawn()
     {
         GameObject randomSlime = slimeToSpawn[Random.Range(0, slimeToSpawn.Length)];
         SpawnerVolume spawnerVolume = volumes[Random.Range(0, volumes.Length)];
-        if(!followObject) return;
+        if(!followObject) return null;
 
         GameObject newSlime = Instantiate(randomSlime, spawnerVolume.GetPositionInBox(), spawnerVolume.transform.rotation );
+        SlimeComponent result = newSlime.GetComponent<SlimeComponent>();
+        result.Initialize(followObject);
+        return result;
+    }
 
-        newSlime.GetComponent<SlimeComponent>().Initialize(followObject);
+    public SlimeComponent Spawn( Vector3 loc, Quaternion rot)
+    {
+        GameObject randomSlime = slimeToSpawn[Random.Range(0, slimeToSpawn.Length)];
+        if (!followObject) return null;
+
+        GameObject newSlime = Instantiate(randomSlime, loc, rot);
+        SlimeComponent result = newSlime.GetComponent<SlimeComponent>();
+        result.Initialize(followObject);
+        return result;
     }
 }

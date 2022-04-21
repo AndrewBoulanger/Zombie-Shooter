@@ -5,6 +5,8 @@ using UnityEngine;
 public class SlimeHealthComponent : HealthComponent
 {
     StateManager stateMachine;
+    
+    
 
     private void Awake()
     {

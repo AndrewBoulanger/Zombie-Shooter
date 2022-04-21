@@ -68,6 +68,7 @@ public class PlayerController : SaveableMO
 
     private void OnDeath()
     {
+        uIController.EnableLoseScreen();
         isDead = true;
         GetComponent<Animator>().SetBool("IsDead", true);
     }

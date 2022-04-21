@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34820daaa3e034f4992a0d28e86b4a4b, type: 3}
+  m_Name: ammo
+  m_EditorClassIdentifier: 
+  name: Arrows
+  itemCategory: 4
+  itemPrefab: {fileID: 2751715784308910977, guid: 1a5e72e4cd8b9e845b3bb7242acb207d, type: 3}
+  stackable: 1
+  maxSize: 99
+  amountValue: 30
+  controller: {fileID: 0}

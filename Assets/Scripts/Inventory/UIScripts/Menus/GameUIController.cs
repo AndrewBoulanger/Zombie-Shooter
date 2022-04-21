@@ -8,6 +8,7 @@ public class GameUIController : MonoBehaviour
     [SerializeField] private GameHUDWidget GameCanvas;
     [SerializeField] private GameHUDWidget PauseCanvas;
     [SerializeField] private GameHUDWidget InventoryCanvas;
+    [SerializeField] private GameHUDWidget LoseScreen, WinScreen;
 
     private GameHUDWidget ActiveWidget;
 
@@ -40,12 +41,28 @@ public class GameUIController : MonoBehaviour
         ActiveWidget = InventoryCanvas;
         ActiveWidget.EnableWidget();
     }
+    public void EnableLoseScreen()
+    {
+        //if (ActiveWidget) ActiveWidget.DisableWidget();
+
+        ActiveWidget = LoseScreen;
+        ActiveWidget.EnableWidget();
+    }
+    public void EnableWinScreen()
+    {
+       // if (ActiveWidget) ActiveWidget.DisableWidget();
+
+        ActiveWidget = WinScreen;
+        ActiveWidget.EnableWidget();
+    }
 
     public void DisableAllMenus()
     {
         GameCanvas.DisableWidget();
         PauseCanvas.DisableWidget();
         InventoryCanvas.DisableWidget();
+        WinScreen.DisableWidget();
+        LoseScreen.DisableWidget();
     }
 }
 
@@ -54,6 +71,7 @@ public abstract class GameHUDWidget : MonoBehaviour
     public virtual void EnableWidget() 
     {
         gameObject.SetActive(true);
+        
     }
     public virtual void DisableWidget()
     {

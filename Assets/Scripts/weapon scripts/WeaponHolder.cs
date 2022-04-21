@@ -13,7 +13,7 @@ public class WeaponHolder : MonoBehaviour
     MovementComponent movementComponent;
     Animator animator;
 
-    int ammoCount = 30;
+    int ammoCount = 0;
 
     Sprite crosshairImage;
 
@@ -28,8 +28,19 @@ public class WeaponHolder : MonoBehaviour
     public readonly int cancelledAimingHash = Animator.StringToHash("cancelledAiming");
     public readonly int isReloadingHash = Animator.StringToHash("isDrawingArrow");
 
+    InputAction AimInput;
+    PlayerInputActions actions;
+
+    public delegate void OnArrowFiredDel(int ammo);
+    public event OnArrowFiredDel OnArrowFired; 
+
     public int AmmoCount {get => ammoCount; private set => ammoCount = value;}
 
+    private void Awake()
+    {
+        actions = new PlayerInputActions();
+        AimInput = actions.playerActionMap.Aim;
+    }
     private void Start()
     {
         animator = GetComponent<Animator>();
@@ -49,9 +60,25 @@ public class WeaponHolder : MonoBehaviour
         animator.SetIKPosition(AvatarIKGoal.LeftHand, gripIKSocketLocation.position);
     }
 
+    private void Update()
+    {
+        if(playerController.gameIsPaused || playerController.isDead)
+            return;
+        if(playerController.isAiming && AimInput.phase == InputActionPhase.Waiting)
+        {
+            LooseArrow();
+            StopAiming();
+        }
+        else if(!playerController.isAiming && AimInput.phase == InputActionPhase.Started)
+        {
+            StartArrowDrawBack();
+        }
+    }
+
     public void OnAim( InputValue value)
     {
-            if (value.isPressed )
+
+            if (value.isPressed && !playerController.gameIsPaused)
             {
                 StartArrowDrawBack();
             }
@@ -120,7 +147,7 @@ public class WeaponHolder : MonoBehaviour
         playerController.isReloading = true;
         equippedWeapon.Shoot();
         ammoCount -= equippedWeapon.weaponStats.arrowsPerShot;
-
+        OnArrowFired?.Invoke(ammoCount);
         animator.SetBool(isReloadingHash, true);
     }
 
@@ -143,4 +170,12 @@ public class WeaponHolder : MonoBehaviour
         GetComponent<InventoryComponent>().UnequipByCategory(ItemCategory.Weapon, newWeapon);
     }
 
+    private void OnEnable()
+    {
+        actions.Enable();
+    }
+    private void OnDisable()
+    {
+        actions.Disable();
+    }
 }
