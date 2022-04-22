@@ -7,12 +7,8 @@ public class BowComponent : WeaponComponent
 
     protected bool isDrawingArrow;
     protected float drawTimer;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    
+    [SerializeField] AudioSource arrowSound;
 
     // Update is called once per frame
     void Update()
@@ -41,11 +37,14 @@ public class BowComponent : WeaponComponent
             { 
                   hits = Physics.RaycastAll(screenRay, weaponStats.distance, weaponStats.weaponHitLayer);
                   if(hits.Length == 0) return;
+                  else
+                    arrowSound.Play();
             }
             else
             {
                 if (!Physics.Raycast(screenRay, out RaycastHit hit, weaponStats.distance, weaponStats.weaponHitLayer)) return;
 
+                arrowSound.Play();
                 hits = new RaycastHit[] { hit };
             }
 

@@ -4,15 +4,47 @@ using UnityEngine;
 
 public class GameCanvas : GameHUDWidget
 {
-    // Start is called before the first frame update
-    void Start()
+
+    [SerializeField] TMPro.TextMeshProUGUI roundCount;
+    [SerializeField] TMPro.TextMeshProUGUI enemiesCount;
+    [SerializeField] EnemyManager enemyManager;
+
+    private void Update()
     {
-        
+        enemiesCount.text = enemyManager.GetNumSlimes.ToString();
+    }
+    void OnRoundChanged(int round)
+    {
+        roundCount.text = round.ToString();
     }
 
-    // Update is called once per frame
-    void Update()
+    void OnEnemiesChanged(int numEnemies)
     {
-        
+        enemiesCount.text = numEnemies.ToString();
+    }
+
+
+    private void OnEnable()
+    {
+        EnemyManager.OnWaveCompleted += OnRoundChanged;
+    }
+
+    private void OnDisable()
+    {
+        EnemyManager.OnWaveCompleted -= OnRoundChanged;
+    }
+
+    public override void EnableWidget()
+    {
+        base.EnableWidget();
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+    }
+
+    public override void DisableWidget()
+    {
+        base.DisableWidget();
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
     }
 }

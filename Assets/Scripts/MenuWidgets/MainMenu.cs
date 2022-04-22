@@ -1,17 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 
 public abstract class MainMenu : MonoBehaviour
 {
-    [SerializeField] private string MenuName;
-
-    //   protected MenuController menuController;
-    void Awake()
+    public void OnLoadClicked()
     {
-        // menuController = FindObjectOfType<MenuController>();
-        // menuController?.AddMenu(MenuName, this);
-               
+        if(PersistantSaveInfo.HasSaveData)
+        { 
+            PersistantSaveInfo.ShouldLoadLevel = true;
+           SceneManager.LoadScene("GameScene");
+        }
+    }
+
+    public void OnQuitPressed()
+    {
+        Application.Quit();
     }
 }

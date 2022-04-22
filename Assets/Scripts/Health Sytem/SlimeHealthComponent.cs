@@ -6,8 +6,6 @@ public class SlimeHealthComponent : HealthComponent
 {
     StateManager stateMachine;
     
-    
-
     private void Awake()
     {
         stateMachine = GetComponent<StateManager>();
@@ -16,6 +14,7 @@ public class SlimeHealthComponent : HealthComponent
     public override void Destroy()
     {
         stateMachine.ChangeState(ESlimeStates.IsDead);
+        GetComponent<SlimeComponent>().InvokeOnSlimeDeath();
     }
 
     public override void TakeDamage(float damage)

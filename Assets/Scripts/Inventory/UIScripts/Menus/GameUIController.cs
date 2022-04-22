@@ -16,6 +16,7 @@ public class GameUIController : MonoBehaviour
     {
         DisableAllMenus();
         EnableGameMenu();
+        Cursor.lockState = CursorLockMode.Confined;
     }
 
     public void EnablePauseMenu()
@@ -63,6 +64,15 @@ public class GameUIController : MonoBehaviour
         InventoryCanvas.DisableWidget();
         WinScreen.DisableWidget();
         LoseScreen.DisableWidget();
+    }
+
+    private void OnEnable()
+    {
+        PlayerEvents.OnPlayerWin += EnableWinScreen;
+    }
+    private void OnDisable()
+    {
+         PlayerEvents.OnPlayerWin -= EnableWinScreen;
     }
 }
 

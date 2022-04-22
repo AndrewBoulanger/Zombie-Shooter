@@ -15,6 +15,8 @@ public class EnemyManager : SaveableMO
     public delegate void OnWaveDelegate(int wave);
     public static event OnWaveDelegate OnWaveCompleted;
 
+    public int GetNumSlimes{ get => activeSlimes.Count; }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -24,6 +26,7 @@ public class EnemyManager : SaveableMO
 
     public void removeSlime(SlimeComponent slime)
     {
+        print(activeSlimes.Count);
         activeSlimes.Remove(slime);
         if(activeSlimes.Count <= 0)
             advanceWave();
@@ -31,7 +34,7 @@ public class EnemyManager : SaveableMO
 
     void advanceWave()
     {
-        if(currentWave++ <= Waves)
+        if(currentWave++ < Waves)
         {
             for(int i = 0; i< EnemiesPerWave; i++)
             {
